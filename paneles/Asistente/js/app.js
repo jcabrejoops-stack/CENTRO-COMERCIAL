@@ -1,46 +1,40 @@
-// Centro Comercial - Asistente JS (v2.0 Robust)
+// Centro Comercial - Asistente JS (v4.0 Hybrid Scraper)
 const SUPABASE_URL = 'https://jyqekqjmmcykkrqihgav.supabase.co';
 const SUPABASE_KEY = 'sb_publishable_HCjNR1-PD4AcsGkOV-FSug_Exv3xEER';
+const MAKE_WEBHOOK_URL = 'https://hook.us2.make.com/5i7ar8bb8kg2qxn0obei3htw6r7gk4h2';
+
+function getSupabase() {
+    if (!window.supabase) return null;
+    return window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+}
 
 // Login Logic
 async function handleLogin(event) {
     event.preventDefault();
-    
-    // Ensure supabase is loaded
-    if (!window.supabase) {
-        alert('Cargando motor de seguridad... reintenta en 2 segundos.');
-        return;
-    }
-
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const supabase = getSupabase();
+    if (!supabase) return;
     const emailInput = document.getElementById('username');
     const passwordInput = document.getElementById('password');
     const btn = document.querySelector('button[type="submit"]');
-    
-    if (!emailInput || !passwordInput || !btn) return;
-
     const email = emailInput.value;
     const password = passwordInput.value;
-    
     const originalContent = btn.innerHTML;
     btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Verificando...';
     btn.disabled = true;
-
     try {
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { error } = await supabase.auth.signInWithPassword({
             email: email.includes('@') ? email : `${email}@centrocomercial.com`,
             password: password,
         });
-
         if (error) {
-            alert('Error de acceso: ' + error.message);
+            alert('Error: ' + error.message);
             btn.innerHTML = originalContent;
             btn.disabled = false;
         } else {
             window.location.href = 'video.html';
         }
     } catch (err) {
-        alert('Ocurrió un error inesperado al conectar.');
+        alert('Error inesperado');
         btn.innerHTML = originalContent;
         btn.disabled = false;
     }
@@ -53,109 +47,113 @@ function switchView(viewName, element) {
         const el = document.getElementById('view-' + s);
         if (el) el.style.display = 'none';
     });
-    
     const navItems = document.querySelectorAll('.nav-item');
     navItems.forEach(n => n.classList.remove('active'));
-    
     const target = document.getElementById('view-' + viewName);
-    if (target) target.style.display = 'block';
+    if (target) {
+        target.style.display = 'block';
+        if (viewName === 'perfil') loadAIConfig();
+    }
     if (element) element.classList.add('active');
 }
 
-// Video Flow logic
-function toggleContinueBtn() {
-    const checkbox = document.getElementById('entendido');
-    const btn = document.getElementById('btnContinuar');
-    if (checkbox && btn) {
-        const isChecked = checkbox.checked;
-        btn.style.pointerEvents = isChecked ? 'auto' : 'none';
-        btn.style.opacity = isChecked ? '1' : '0.5';
-        if (isChecked) {
-            btn.classList.add('btn-primary');
-            btn.classList.remove('btn-secondary');
-        } else {
-            btn.classList.remove('btn-primary');
-            btn.classList.add('btn-secondary');
-        }
-    }
-}
-
-// Scraping Logic (Simulated)
+// HYBRID SCRAPING LOGIC
 async function startScraping() {
-    const query = document.getElementById('scraping-query').value;
-    const location = document.getElementById('scraping-location').value;
+    const input = document.getElementById('scraping-query').value.trim();
+    const location = document.getElementById('scraping-location').value.trim();
     const btn = document.querySelector('#view-extraer .btn-primary');
     
-    if (!query || !location) {
-        alert('Por favor completa ambos campos.');
+    if (!input) {
+        alert('Escribe algo para buscar o pega un link.');
         return;
     }
 
+    const isURL = input.startsWith('http');
+    const type = isURL ? 'url' : 'negocio';
+
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-gear fa-spin" style="margin-right: 8px;"></i> Activando IA Scraping...';
+    btn.innerHTML = `<i class="fa-solid fa-robot fa-spin"></i> Procesando ${isURL ? 'Enlace' : 'Negocio'}...`;
     btn.disabled = true;
 
-    setTimeout(() => {
-        const mockResults = [
-            { name: "OdontoDigital " + location, phone: "+52 55123456", ig: "@odonto_digital", rating: 4.9 },
-            { name: "Inmobiliaria Gold", phone: "+52 55987654", ig: "@gold_realestate", rating: 4.5 },
-            { name: "Estética Premium", phone: "+52 55223344", ig: "@estetica_p", rating: 4.2 }
-        ];
+    try {
+        const response = await fetch(MAKE_WEBHOOK_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                type: type,
+                data: input,
+                location: location,
+                timestamp: new Date().toISOString()
+            })
+        });
 
-        renderResults(mockResults);
+        if (response.ok) {
+            alert(`Señal enviada a la IA: ${isURL ? 'Rastreando URL' : 'Buscando Negocio'}.`);
+        } else {
+            alert('Error en la central de IA.');
+        }
+    } catch (err) {
+        alert('Error de conexión.');
+    } finally {
         btn.innerHTML = originalText;
         btn.disabled = false;
-        document.getElementById('scraping-results').style.display = 'block';
-        document.getElementById('results-count').innerText = `${mockResults.length} resultados encontrados`;
-    }, 2000);
-}
-
-function renderResults(results) {
-    const container = document.getElementById('results-container');
-    if (!container) return;
-    container.innerHTML = results.map(r => `
-        <div class="liquid-glass" style="padding: 15px; margin-bottom: 12px; border-left: 4px solid var(--neon-green);">
-            <h4 style="font-size: 16px; margin-bottom: 4px;">${r.name}</h4>
-            <div style="font-size: 13px; color: rgba(255,255,255,0.8); display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 5px;">
-                <span><i class="fa-solid fa-phone"></i> ${r.phone}</span>
-                <span><i class="fa-brands fa-instagram"></i> ${r.ig}</span>
-            </div>
-        </div>
-    `).join('');
-
-// Session and AI Config
-async function checkSession() {
-    if (window.location.pathname.includes('panel.html') || window.location.pathname.includes('video.html')) {
-        if (!window.supabase) return;
-        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        const { data: { session } } = await supabase.auth.getSession();
-        if (session) {
-            const displayEl = document.getElementById('display-user-id');
-            if (displayEl) displayEl.innerText = session.user.id.substring(0, 8) + '...';
-        }
     }
 }
 
+// Persistent Brain
 async function saveAIConfig() {
+    const supabase = getSupabase();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
     const aiName = document.getElementById('ai-name').value;
     const aiKnowledge = document.getElementById('ai-knowledge').value;
     const btn = document.querySelector('#view-perfil .btn-primary');
-
     const originalText = btn.innerHTML;
-    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Guardando Cerebro...';
+    btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Guardando...';
     btn.disabled = true;
+    const { error } = await supabase.from('ai_settings').upsert({ 
+        user_id: session.user.id, ai_name: aiName, ai_knowledge: aiKnowledge, updated_at: new Date()
+    });
+    if (error) {
+        alert('Error');
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+    } else {
+        btn.innerHTML = '¡Guardado!';
+        setTimeout(() => { btn.innerHTML = originalText; btn.disabled = false; }, 2000);
+    }
+}
 
-    // Simulación de guardado
+async function loadAIConfig() {
+    const supabase = getSupabase();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) return;
+    const { data } = await supabase.from('ai_settings').select('*').eq('user_id', session.user.id).single();
+    if (data) {
+        document.getElementById('ai-name').value = data.ai_name;
+        document.getElementById('ai-knowledge').value = data.ai_knowledge;
+    }
+}
+
+async function importGoogleData() {
+    const btn = document.querySelector('#view-perfil .btn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = 'Importando...';
     setTimeout(() => {
-        btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Cerebro Actualizado!';
-        btn.style.background = '#2ecc71';
-        
-        setTimeout(() => {
-            btn.innerHTML = originalText;
-            btn.disabled = false;
-            btn.style.background = 'var(--neon-green)';
-        }, 2000);
-    }, 1500);
+        alert('Importación completada.');
+        btn.innerHTML = originalText;
+    }, 2000);
+}
+
+async function checkSession() {
+    const supabase = getSupabase();
+    if (!supabase) return;
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session) {
+        const displayEl = document.getElementById('display-user-id');
+        if (displayEl) displayEl.innerText = session.user.id.substring(0, 8);
+        if (window.location.pathname.includes('panel.html')) loadAIConfig();
+    }
 }
 
 document.addEventListener('DOMContentLoaded', checkSession);

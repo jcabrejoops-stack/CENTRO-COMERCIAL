@@ -8,119 +8,87 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&family=Outfit:wght@300;600&display=swap" rel="stylesheet">
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
-    <!-- Supabase JS -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        .chat-category-title { font-size: 14px; font-weight: 600; margin: 20px 0 10px 0; display: flex; align-items: center; gap: 8px; }
+        .text-orange { color: #FF8C00; }
+        .text-blue { color: #3498db; }
+        .badge-wa { background: #25D366; color: #000; font-size: 10px; padding: 2px 6px; border-radius: 10px; }
+    </style>
 </head>
 <body>
 
-    <!-- Top Bar -->
     <div class="top-bar liquid-glass" style="margin: 10px 10px 0 10px; border-radius: 16px;">
         <div class="title-left text-elegant">Centro Comercial</div>
         <div class="title-right text-neon">Asistente</div>
     </div>
 
-    <!-- Main Content Area -->
     <div class="container" id="main-content" style="padding-bottom: 90px; overflow-y: auto;">
         
-        <!-- View 1: Extraer -->
+        <!-- View 1: Extraer (HÍBRIDO) -->
         <div id="view-extraer" class="view-section">
             <div class="liquid-glass" style="padding: 20px; margin-bottom: 20px;">
-                <h2 class="text-elegant mb-2" style="font-size: 20px;">Buscador de Prospectos</h2>
+                <h2 class="text-elegant mb-2" style="font-size: 20px;">Buscador Inteligente</h2>
                 <div class="form-group">
-                    <label>¿Qué tipo de negocio buscas?</label>
-                    <input type="text" id="scraping-query" class="form-control" placeholder="Ej: Odontólogos, Inmobiliarias...">
+                    <label>Búsqueda o Enlace</label>
+                    <input type="text" id="scraping-query" class="form-control" placeholder="Ej: Odontólogos... o pega una URL">
                 </div>
-                <div class="form-group">
-                    <label>Ciudad o Ubicación</label>
-                    <input type="text" id="scraping-location" class="form-control" placeholder="Ej: Ciudad de México, Madrid...">
+                <div id="location-field" class="form-group">
+                    <label>Ubicación (opcional para URLs)</label>
+                    <input type="text" id="scraping-location" class="form-control" placeholder="Ej: CDMX...">
                 </div>
                 <button class="btn btn-primary" onclick="startScraping()">
-                    <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i> Iniciar Extracción IA
+                    <i class="fa-solid fa-bolt" style="margin-right: 8px;"></i> Ejecutar Extracción IA
                 </button>
             </div>
             <div id="scraping-results" style="display: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                    <h3 class="text-neon" style="font-size: 16px;">Prospectos Encontrados</h3>
-                    <span id="results-count" style="font-size: 12px; opacity: 0.6;">0 resultados</span>
-                </div>
                 <div id="results-container"></div>
             </div>
         </div>
 
         <!-- View 2: Mensajes -->
         <div id="view-mensajes" class="view-section" style="display: none;">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                <h2 class="text-elegant" style="font-size: 20px;">Chats Activos</h2>
-                <span class="text-neon" style="font-size: 14px;"><i class="fa-solid fa-circle-dot"></i> Online</span>
-            </div>
+            <h2 class="text-elegant mb-3">Central de Chats</h2>
             <div class="form-group">
-                <input type="text" class="form-control" style="padding: 10px 15px; font-size: 14px;" placeholder="Buscar chats...">
+                <input type="text" class="form-control" style="background: rgba(255,255,255,0.05);" placeholder="Buscar conversaciones...">
             </div>
-            <div id="chats-list">
-                <div class="liquid-glass" style="padding: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; cursor: pointer;">
-                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=39ff14&color=000" style="width: 50px; height: 50px; border-radius: 50%;" alt="Avatar">
-                    <div style="flex-grow: 1;">
-                        <div style="display: flex; justify-content: space-between;">
-                            <h4 style="font-size: 15px;">Juan Perez (Prospecto)</h4>
-                            <span style="font-size: 11px; opacity: 0.5;">12:45</span>
-                        </div>
-                        <p style="font-size: 13px; color: rgba(255,255,255,0.6);">Gracias por la info, agendemos...</p>
-                    </div>
-                </div>
-            </div>
+            <div class="chat-category-title text-neon"><i class="fa-solid fa-bolt"></i> Chats Activos</div>
+            <div id="list-chats-activos"></div>
+            <div class="chat-category-title text-orange"><i class="fa-brands fa-google"></i> GMAIL</div>
+            <div id="list-chats-gmail"></div>
+            <div class="chat-category-title" style="color: #25D366;"><i class="fa-brands fa-whatsapp"></i> WHATSAPP</div>
+            <div id="list-chats-whatsapp"></div>
+            <div class="chat-category-title text-blue"><i class="fa-solid fa-address-book"></i> CONTACTOS (LLAMAR)</div>
+            <div id="list-chats-contactos"></div>
         </div>
 
         <!-- View 3: Listas -->
         <div id="view-listas" class="view-section" style="display: none;">
-            <h2 class="text-elegant mb-2">Mis Listas</h2>
-            <button class="btn btn-secondary mb-2" style="border-style: dashed;">
-                <i class="fa-solid fa-plus"></i> Crear Lista +
-            </button>
-            <div class="liquid-glass" style="padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 16px;"><i class="fa-solid fa-list" style="margin-right: 10px; color: var(--neon-green);"></i> Prospectos B2B</span>
-                <span style="font-size: 12px; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 10px;">42 items</span>
-            </div>
+            <h2 class="text-elegant mb-3">Mis Listas</h2>
+            <div id="lists-container"></div>
         </div>
 
-        <!-- View 4: Cerebro (Ex Perfil) -->
+        <!-- View 4: Cerebro -->
         <div id="view-perfil" class="view-section" style="display: none;">
             <h2 class="text-elegant mb-3 text-center">Configuración del Cerebro</h2>
-            
-            <!-- Bloque 1: Configuración de la IA -->
             <div class="liquid-glass" style="padding: 20px; margin-bottom: 20px;">
-                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
-                    <i class="fa-solid fa-brain text-neon" style="font-size: 24px;"></i>
-                    <h3 class="text-elegant" style="font-size: 18px;">Identidad de mi Asistente</h3>
-                </div>
-                
                 <div class="form-group">
                     <label>Nombre del Asistente</label>
-                    <input type="text" id="ai-name" class="form-control" placeholder="Ej: Sofía, Lucas..." value="Asistente Virtual">
+                    <input type="text" id="ai-name" class="form-control" value="Asistente Virtual">
                 </div>
-                
                 <div class="form-group">
-                    <label>Base de Conocimiento (Entrenamiento)</label>
-                    <textarea id="ai-knowledge" class="form-control" style="height: 120px; font-size: 13px;" placeholder="Pega aquí toda la información de tu negocio (precios, horarios, servicios...) para que la IA aprenda."></textarea>
+                    <label>Base de Conocimiento</label>
+                    <textarea id="ai-knowledge" class="form-control" style="height: 120px;"></textarea>
                 </div>
-                
-                <button class="btn btn-primary" onclick="saveAIConfig()">
-                    <i class="fa-solid fa-floppy-disk" style="margin-right: 8px;"></i> Guardar Configuración IA
-                </button>
+                <button class="btn btn-primary" onclick="saveAIConfig()">Guardar Cerebro</button>
             </div>
-
-            <!-- Bloque 2: Cuenta Humana -->
             <div class="liquid-glass" style="padding: 20px; text-align: center;">
-                <h3 class="text-elegant" style="font-size: 16px; margin-bottom: 15px;">Mi Cuenta (Humano)</h3>
-                <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.05); margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 24px;">
-                    <i class="fa-solid fa-user"></i>
-                </div>
-                <button class="btn" style="background: white; color: #333; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px;">
+                <button class="btn" style="background: white; color: #333; font-size: 14px;" onclick="importGoogleData()">
                     <i class="fa-brands fa-google" style="color: #DB4437;"></i> Vincular con Google
                 </button>
-                <p style="font-size: 11px; opacity: 0.5; margin-top: 15px;">ID de Usuario: <span id="display-user-id">No conectado</span></p>
+                <p style="font-size: 11px; opacity: 0.5; margin-top: 15px;">ID: <span id="display-user-id">...</span></p>
             </div>
         </div>
 
