@@ -1,0 +1,30 @@
+{
+  "project": "Centro Comercial",
+  "history": [
+    "Created directory structure",
+    "Implemented Liquid Glass design system",
+    "Developed 3 main windows (Login, Video, Panel)",
+    "Integrated Supabase Auth",
+    "Initialized Git repository for 'Asistente'",
+    "Configured Google Maps Satellite API"
+  ],
+  "api_keys": {
+    "google_maps": "AIzaSyBzDIvMnx4kzRQnl5YpDjYOVLFmteAIeeY"
+  },
+  "structure": {
+    "root": "centro_comercial/",
+    "main_panel": "index.html (Maps API)",
+    "sub_projects_folder": "paneles/",
+    "active_panels": ["Asistente"],
+    "memory_folder": "antigravity/"
+  },
+  "paneles": {
+    "Asistente": {
+      "status": "Completado",
+      "features": ["Login SaaS", "Scraping UI", "WhatsApp UI", "List Management"],
+      "supabase_connected": true
+    }
+  },
+  "last_update": "2026-05-10T01:17:00",
+  "notes": "Se corrigió la ubicación del mapa. El mapa reside en el Panel de Centro Comercial (raíz), mientras que el Asistente es un módulo independiente dentro de la carpeta paneles."
+}
