@@ -25,27 +25,22 @@
     <!-- Main Content Area -->
     <div class="container" id="main-content" style="padding-bottom: 90px; overflow-y: auto;">
         
-        <!-- View 1: Extraer (Default) -->
+        <!-- View 1: Extraer -->
         <div id="view-extraer" class="view-section">
             <div class="liquid-glass" style="padding: 20px; margin-bottom: 20px;">
                 <h2 class="text-elegant mb-2" style="font-size: 20px;">Buscador de Prospectos</h2>
-                
                 <div class="form-group">
                     <label>¿Qué tipo de negocio buscas?</label>
                     <input type="text" id="scraping-query" class="form-control" placeholder="Ej: Odontólogos, Inmobiliarias...">
                 </div>
-                
                 <div class="form-group">
                     <label>Ciudad o Ubicación</label>
                     <input type="text" id="scraping-location" class="form-control" placeholder="Ej: Ciudad de México, Madrid...">
                 </div>
-
                 <button class="btn btn-primary" onclick="startScraping()">
                     <i class="fa-solid fa-magnifying-glass" style="margin-right: 8px;"></i> Iniciar Extracción IA
                 </button>
             </div>
-
-            <!-- Results -->
             <div id="scraping-results" style="display: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <h3 class="text-neon" style="font-size: 16px;">Prospectos Encontrados</h3>
@@ -65,18 +60,14 @@
                 <input type="text" class="form-control" style="padding: 10px 15px; font-size: 14px;" placeholder="Buscar chats...">
             </div>
             <div id="chats-list">
-                <!-- Chat Item 1 -->
                 <div class="liquid-glass" style="padding: 12px; display: flex; align-items: center; gap: 12px; margin-bottom: 10px; cursor: pointer;">
-                    <div style="position: relative;">
-                        <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=39ff14&color=000" style="width: 50px; height: 50px; border-radius: 50%;" alt="Avatar">
-                        <div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #25D366; border: 2px solid #000; border-radius: 50%;"></div>
-                    </div>
+                    <img src="https://ui-avatars.com/api/?name=Juan+Perez&background=39ff14&color=000" style="width: 50px; height: 50px; border-radius: 50%;" alt="Avatar">
                     <div style="flex-grow: 1;">
                         <div style="display: flex; justify-content: space-between;">
                             <h4 style="font-size: 15px;">Juan Perez (Prospecto)</h4>
                             <span style="font-size: 11px; opacity: 0.5;">12:45</span>
                         </div>
-                        <p style="font-size: 13px; color: rgba(255,255,255,0.6); overflow: hidden; white-space: nowrap; text-overflow: ellipsis; max-width: 180px;">Gracias por la info, agendemos...</p>
+                        <p style="font-size: 13px; color: rgba(255,255,255,0.6);">Gracias por la info, agendemos...</p>
                     </div>
                 </div>
             </div>
@@ -84,7 +75,7 @@
 
         <!-- View 3: Listas -->
         <div id="view-listas" class="view-section" style="display: none;">
-            <h2 class="text-elegant mb-2 text-center">Mis Listas</h2>
+            <h2 class="text-elegant mb-2">Mis Listas</h2>
             <button class="btn btn-secondary mb-2" style="border-style: dashed;">
                 <i class="fa-solid fa-plus"></i> Crear Lista +
             </button>
@@ -94,17 +85,42 @@
             </div>
         </div>
 
-        <!-- View 4: Perfil -->
+        <!-- View 4: Cerebro (Ex Perfil) -->
         <div id="view-perfil" class="view-section" style="display: none;">
-            <h2 class="text-elegant mb-2 text-center">Perfil</h2>
-            <div class="liquid-glass" style="padding: 30px 20px; text-align: center;">
-                <div style="width: 80px; height: 80px; border-radius: 50%; background: rgba(255,255,255,0.1); margin: 0 auto 20px auto; display: flex; justify-content: center; align-items: center; font-size: 32px;">
+            <h2 class="text-elegant mb-3 text-center">Configuración del Cerebro</h2>
+            
+            <!-- Bloque 1: Configuración de la IA -->
+            <div class="liquid-glass" style="padding: 20px; margin-bottom: 20px;">
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+                    <i class="fa-solid fa-brain text-neon" style="font-size: 24px;"></i>
+                    <h3 class="text-elegant" style="font-size: 18px;">Identidad de mi Asistente</h3>
+                </div>
+                
+                <div class="form-group">
+                    <label>Nombre del Asistente</label>
+                    <input type="text" id="ai-name" class="form-control" placeholder="Ej: Sofía, Lucas..." value="Asistente Virtual">
+                </div>
+                
+                <div class="form-group">
+                    <label>Base de Conocimiento (Entrenamiento)</label>
+                    <textarea id="ai-knowledge" class="form-control" style="height: 120px; font-size: 13px;" placeholder="Pega aquí toda la información de tu negocio (precios, horarios, servicios...) para que la IA aprenda."></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="saveAIConfig()">
+                    <i class="fa-solid fa-floppy-disk" style="margin-right: 8px;"></i> Guardar Configuración IA
+                </button>
+            </div>
+
+            <!-- Bloque 2: Cuenta Humana -->
+            <div class="liquid-glass" style="padding: 20px; text-align: center;">
+                <h3 class="text-elegant" style="font-size: 16px; margin-bottom: 15px;">Mi Cuenta (Humano)</h3>
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: rgba(255,255,255,0.05); margin: 0 auto 15px auto; display: flex; justify-content: center; align-items: center; font-size: 24px;">
                     <i class="fa-solid fa-user"></i>
                 </div>
-                <h3 style="margin-bottom: 20px;">Cuenta SaaS</h3>
-                <button class="btn" style="background: white; color: #333; display: flex; align-items: center; justify-content: center; gap: 10px;">
-                    <i class="fa-brands fa-google" style="color: #DB4437;"></i> Registrar con Google
+                <button class="btn" style="background: white; color: #333; display: flex; align-items: center; justify-content: center; gap: 10px; font-size: 14px;">
+                    <i class="fa-brands fa-google" style="color: #DB4437;"></i> Vincular con Google
                 </button>
+                <p style="font-size: 11px; opacity: 0.5; margin-top: 15px;">ID de Usuario: <span id="display-user-id">No conectado</span></p>
             </div>
         </div>
 
@@ -125,8 +141,8 @@
             <span>Listas</span>
         </a>
         <a href="#" class="nav-item" onclick="switchView('perfil', this)">
-            <i class="fa-regular fa-user"></i>
-            <span>Perfil</span>
+            <i class="fa-solid fa-brain"></i>
+            <span>Cerebro</span>
         </a>
     </div>
 

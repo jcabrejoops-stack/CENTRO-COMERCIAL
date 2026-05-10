@@ -122,4 +122,40 @@ function renderResults(results) {
             </div>
         </div>
     `).join('');
+
+// Session and AI Config
+async function checkSession() {
+    if (window.location.pathname.includes('panel.html') || window.location.pathname.includes('video.html')) {
+        if (!window.supabase) return;
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            const displayEl = document.getElementById('display-user-id');
+            if (displayEl) displayEl.innerText = session.user.id.substring(0, 8) + '...';
+        }
+    }
 }
+
+async function saveAIConfig() {
+    const aiName = document.getElementById('ai-name').value;
+    const aiKnowledge = document.getElementById('ai-knowledge').value;
+    const btn = document.querySelector('#view-perfil .btn-primary');
+
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fa-solid fa-circle-notch fa-spin"></i> Guardando Cerebro...';
+    btn.disabled = true;
+
+    // Simulación de guardado
+    setTimeout(() => {
+        btn.innerHTML = '<i class="fa-solid fa-check"></i> ¡Cerebro Actualizado!';
+        btn.style.background = '#2ecc71';
+        
+        setTimeout(() => {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            btn.style.background = 'var(--neon-green)';
+        }, 2000);
+    }, 1500);
+}
+
+document.addEventListener('DOMContentLoaded', checkSession);
